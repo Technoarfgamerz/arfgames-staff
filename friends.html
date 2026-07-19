@@ -1,20 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ARFGAMES STAFF</title>
+  <title>ARFGAMES STAFF</title>
 </head>
-<body style="background:#111827;color:white;font-family:Arial;text-align:center;padding-top:100px;">
+<body>
 
-<h1>🎉 Welcome to ARFGAMES STAFF</h1>
+<h1>Welcome to ARFGAMES STAFF</h1>
 
 <p>You are successfully logged in.</p>
 
-<button onclick="logout()">Logout</button>
+<button id="logoutBtn">Logout</button>
 
-<script>
-function logout(){
-    alert("Logout feature will be added in the next step.");
-}
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAyTw1czFX8uR4rnJOP7cVxCr55_nhOHG0",
+  authDomain: "arfgames-staff.firebaseapp.com",
+  projectId: "arfgames-staff",
+  storageBucket: "arfgames-staff.firebasestorage.app",
+  messagingSenderId: "705112766623",
+  appId: "1:705112766623:web:455c3c3b2f14c37b5b4aaa"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Protect this page
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+  }
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  signOut(auth).then(() => {
+    window.location.href = "index.html";
+  });
+});
+
 </script>
 
 </body>
