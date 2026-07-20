@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -31,20 +33,36 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,.65);
+background:rgba(0,0,0,.70);
 z-index:-1;
 }
 
 header{
-background:rgba(0,0,0,.5);
+background:rgba(0,0,0,.55);
 backdrop-filter:blur(10px);
 padding:20px;
 text-align:center;
-font-size:35px;
-color:#00ff88;
-font-weight:bold;
 border-bottom:2px solid #00ff88;
+box-shadow:0 0 25px #00ff88;
+}
+
+.logo{
+width:90px;
+height:90px;
+border-radius:50%;
+border:3px solid #00ff88;
 box-shadow:0 0 20px #00ff88;
+margin-bottom:10px;
+}
+
+header h1{
+font-size:36px;
+color:#00ff88;
+}
+
+header p{
+color:#ccc;
+margin-top:8px;
 }
 
 .container{
@@ -60,11 +78,12 @@ padding:25px;
 border-radius:20px;
 margin-bottom:25px;
 border:1px solid #00ff88;
+box-shadow:0 0 15px rgba(0,255,136,.3);
 }
 
 .card h2{
-margin-bottom:10px;
 color:#00ff88;
+margin-bottom:10px;
 }
 
 .gallery{
@@ -78,20 +97,19 @@ margin-top:20px;
 background:rgba(255,255,255,.08);
 border-radius:15px;
 overflow:hidden;
-transition:.3s;
 border:2px solid #00ff88;
+transition:.3s;
 }
 
 .photo:hover{
 transform:scale(1.05);
-box-shadow:0 0 25px #00ff88;
+box-shadow:0 0 20px #00ff88;
 }
 
 .photo img{
 width:100%;
 height:220px;
 object-fit:cover;
-display:block;
 }
 
 .photo p{
@@ -103,9 +121,10 @@ button{
 display:block;
 margin:40px auto;
 padding:15px 35px;
+background:#00ff88;
+color:black;
 font-size:18px;
 font-weight:bold;
-background:#00ff88;
 border:none;
 border-radius:12px;
 cursor:pointer;
@@ -126,12 +145,15 @@ color:#ccc;
 </style>
 
 </head>
-
 <body>
 
 <header>
 
-🎮 ARFGAMES STAFF
+<img src="images/logo.png" class="logo" alt="ARFGAMES Logo">
+
+<h1>🎮 ARFGAMES STAFF</h1>
+
+<p>Secure Staff Dashboard</p>
 
 </header>
 
@@ -198,7 +220,6 @@ color:#ccc;
 © 2026 ARFGAMES STAFF
 
 </footer>
-
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
@@ -209,33 +230,70 @@ onAuthStateChanged,
 signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
+import {
+getFirestore,
+collection,
+getDocs
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
 const firebaseConfig = {
 
 apiKey:"AIzaSyAyTw1czFX8uR4rnJOP7cVxCr55_nhOHG0",
-
 authDomain:"arfgames-staff.firebaseapp.com",
-
 projectId:"arfgames-staff",
-
 storageBucket:"arfgames-staff.firebasestorage.app",
-
 messagingSenderId:"705112766623",
-
 appId:"1:705112766623:web:455c3c3b2f14c37b5b4aaa"
 
 };
 
-const app=initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
-const auth=getAuth(app);
+const auth = getAuth(app);
 
-onAuthStateChanged(auth,(user)=>{
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async (user)=>{
 
 if(!user){
 
 window.location.href="index.html";
+return;
 
 }
+
+const snapshot = await getDocs(collection(db,"staff"));
+
+let allowed = false;
+let role = "";
+
+snapshot.forEach((doc)=>{
+
+const data = doc.data();
+
+if(data.uid === user.uid){
+
+allowed = true;
+role = data.role;
+
+}
+
+});
+
+if(!allowed){
+
+alert("Access Denied!");
+
+await signOut(auth);
+
+window.location.href="index.html";
+
+return;
+
+}
+
+console.log("Welcome!");
+console.log("Role:",role);
 
 });
 
